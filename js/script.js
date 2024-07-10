@@ -1,7 +1,13 @@
 const MAZE = document.querySelector("#maze");
+const FOG = document.querySelector("#fog-of-war");
 
 let ctx = MAZE.getContext("2d");
+let ctxFog = FOG.getContext("2d");
+
 let generationComplete = false;
+
+// Fog of Ward radius
+let radius = localStorage.getItem("mazeSize") * 0.75;
 
 let current;
 let goal;
@@ -68,12 +74,36 @@ class Maze {
     // If no more items in the stack then all cells have been visted and the function can be exited
     if (this.stack.length === 0) {
       generationComplete = true;
+      current.highlight(this.columns);
+      this.drawFoW(radius);
       return;
     }
     // Recursively call the draw function. This will be called up until the stack is empty
     window.requestAnimationFrame(() => {
       this.draw();
     });
+  }
+
+  drawFoW(rad) {
+    FOG.height = this.size;
+    FOG.width = this.size;
+
+    let x =
+      current.colNum * (this.size / this.columns) +
+      this.size / this.columns / 2;
+    let y =
+      current.rowNum * (this.size / this.rows) + this.size / this.rows / 2;
+
+    ctxFog.globalCompositeOperation = "xor";
+
+    ctxFog.beginPath();
+
+    ctxFog.arc(x, y, rad, 0, 2 * Math.PI);
+    ctxFog.fillStyle = "red";
+    ctxFog.fill();
+
+    ctxFog.fillStyle = "black";
+    ctxFog.fillRect(0, 0, FOG.width, FOG.height);
   }
 }
 
@@ -226,6 +256,29 @@ class Cell {
     }
   }
 }
+
+// class Fog {
+//   constructor(size, x, y, radius) {
+//     this.size = size;
+//     this.x = x;
+//     this.y = y;
+//     this.radius = radius;
+//   }
+
+//   draw() {
+//     FOG.height = this.size;
+//     FOG.width = this.size;
+//     ctxFog.globalCompositeOperation = "xor";
+
+//     ctxFog.fillStyle = "black";
+//     ctxFog.fillRect(0, 0, FOG.width, FOG.height);
+
+//     ctxFog.beginPath();
+//     ctxFog.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+//     ctxFog.fillStyle = "black";
+//     ctxFog.fill();
+//   }
+// }
 
 // let newMaze = new Maze(600, 15, 15);
 // newMaze.setup();

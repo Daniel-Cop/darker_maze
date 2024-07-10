@@ -1,38 +1,11 @@
-let form = document.querySelector("#settings");
-let size = document.querySelector("#size");
-let rowsCols = document.querySelector("#number");
-let complete = document.querySelector(".complete");
-let replay = document.querySelector(".replay");
-let close = document.querySelector(".close");
+let mazeSize = localStorage.getItem("mazeSize");
+let number = localStorage.getItem("number");
 
 let newMaze;
 
-form.addEventListener("submit", generateMaze);
 document.addEventListener("keydown", move);
-replay.addEventListener("click", () => {
-  location.reload();
-});
 
-close.addEventListener("click", () => {
-  complete.style.display = "none";
-});
-
-function generateMaze(e) {
-  e.preventDefault();
-
-  if (rowsCols.value == "" || size.value == "") {
-    return alert("Please enter all fields");
-  }
-
-  let mazeSize = size.value;
-  let number = rowsCols.value;
-  if (mazeSize > 600 || number > 50) {
-    alert("Maze too large!");
-    return;
-  }
-
-  form.style.display = "none";
-
+function generateMaze() {
   newMaze = new Maze(mazeSize, number, number);
   newMaze.setup();
   newMaze.draw();
@@ -43,6 +16,11 @@ function move(e) {
   let key = e.key;
   let row = current.rowNum;
   let col = current.colNum;
+  if (radius > 10) {
+    radius -= 10;
+  } else {
+    gameOver();
+  }
 
   switch (key) {
     case "ArrowUp":
@@ -50,9 +28,9 @@ function move(e) {
         let next = newMaze.grid[row - 1][col];
         current = next;
         newMaze.draw();
+
         current.highlight(newMaze.columns);
-        // not required if goal is in bottom right
-        // if (current.goal) complete.style.display = "block";
+        // if (current.goal);
       }
       break;
 
@@ -61,8 +39,8 @@ function move(e) {
         let next = newMaze.grid[row][col + 1];
         current = next;
         newMaze.draw();
+
         current.highlight(newMaze.columns);
-        if (current.goal) complete.style.display = "block";
       }
       break;
 
@@ -71,8 +49,8 @@ function move(e) {
         let next = newMaze.grid[row + 1][col];
         current = next;
         newMaze.draw();
+
         current.highlight(newMaze.columns);
-        if (current.goal) complete.style.display = "block";
       }
       break;
 
@@ -80,11 +58,16 @@ function move(e) {
       if (!current.walls.leftWall) {
         let next = newMaze.grid[row][col - 1];
         current = next;
-        newMaze.draw();
+        newMaze.draw(radius);
         current.highlight(newMaze.columns);
-        // not required if goal is in bottom right
-        // if (current.goal) complete.style.display = "block";
       }
       break;
   }
 }
+
+function gameOver() {
+  console.log("Game Over");
+}
+
+generateMaze();
+newMaze.draw(radius);

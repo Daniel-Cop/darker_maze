@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maze</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <script src="js/script.js" defer></script>
-    <script src="js/settings.js" defer></script>
-  </head>
-  <body>
-    <h1 class="title">Maze Generator</h1>
 
-    <div class="complete">
-      <h3>Maze Completed.</h3>
-      <button class="replay" id="submit">Play again</button>
-      <button class="close" id="submit">Close</button>
-    </div>
-    
-      <form id="settings" action="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darker Maze</title>
+    <script src="js/menu.js" defer></script>
+</head>
+
+<body>
+    <h1 class="title">Darker Maze</h1>
+
+    <form id="settings" action="maze.html">
         <p>Maze Size</p>
-        <input id="size" type="number" value="500"/></br>
+        <input id="size" type="number" value="500" /></br>
         <p>Rows/Columns</p>
-        <input id="number" type="number" value="20" /></br>
-        <input id="submit" type="submit" value="Generate Maze">
-      </form>
-    <canvas id="maze"></canvas>
-  </body>
+        <input id="number" type="number" value="15" /></br>
+        <input id="submit" type="submit" value="Play">
+    </form>
+</body>
+
 </html>
