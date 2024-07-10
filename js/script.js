@@ -12,6 +12,26 @@ let radius = localStorage.getItem("mazeSize") * 0.75;
 let current;
 let goal;
 
+let game = {
+  over: false,
+  victory: false,
+  score: 0,
+  time: {
+    start: null,
+    end: 0,
+  },
+  getTime() {
+    let delta = this.time.end - this.time.start;
+    let ms = delta % 1000;
+    delta = (delta - ms) / 1000;
+    let secs = delta % 60;
+    delta = (delta - secs) / 60;
+    let mins = delta % 60;
+
+    return `${mins}:${secs}:${ms}`;
+  },
+};
+
 class Maze {
   constructor(size, rows, columns) {
     this.size = size;
@@ -75,6 +95,9 @@ class Maze {
     if (this.stack.length === 0) {
       generationComplete = true;
       current.highlight(this.columns);
+      if (game.time.start === null) {
+        game.time.start = new Date().getTime();
+      }
       this.drawFoW(radius);
       return;
     }
