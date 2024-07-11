@@ -134,9 +134,12 @@ class Maze {
     while (!goalReached) {
       counter++;
       for (let branch of multiverse) {
+        if (branch.deadEnd) {
+          continue;
+        }
         branch.step();
         branch.isArrived();
-        if (branch.arrived || counter === 100) {
+        if (branch.arrived || counter === 10) {
           console.log("end");
           goalReached = true;
           this.solution = branch;
@@ -309,8 +312,6 @@ class Cell {
     };
     let possibileWay = [];
 
-    // The following lines push all available neighbours to the neighbours array
-    // undefined is returned where the index is out of bounds (edge cases)
     let top =
       !walls.topWall && comingFrom !== grid[row - 1][col]
         ? grid[row - 1][col]
@@ -328,7 +329,6 @@ class Cell {
         ? grid[row][col - 1]
         : undefined;
 
-    // if the following are not 'undefined' then push them to the neighbours array
     if (top) {
       possibileWay.push(top);
     }
@@ -343,13 +343,6 @@ class Cell {
     }
 
     return possibileWay;
-    // // Choose a random neighbour from the neighbours array
-    // if (neighbours.length !== 0) {
-    //   let random = Math.floor(Math.random() * neighbours.length);
-    //   return neighbours[random];
-    // } else {
-    //   return undefined;
-    // }
   }
 }
 
@@ -381,25 +374,28 @@ class Branch {
     const LAST_CELL_VISITED = this.path[this.path.length - 1];
     let finder = this.grid[LAST_CELL_VISITED.rowNum][LAST_CELL_VISITED.colNum];
 
-    let possibleDirection = finder.checkPath(this.lastStep);
-    console.log(finder);
-    console.log(possibleDirection);
+    // let finder = this.path[this.path.length - 1];
 
-    for (let i = 0; i < possibleDirection.length; i++) {
-      if (i === possibleDirection.length - 1) {
-        let next = possibleDirection[i];
-        this.lastStep = finder;
-        this.path.push(next);
-      } else {
-        let clone = this.clone();
-        let next = possibleDirection[i];
-        clone.lastStep = finder;
-        clone.path.push(next);
-        // let cloneBranch = new Branch(this.path, this.grid);
-        // let cloneNext = possibleDirection[i];
-        // cloneBranch.lastStep = finder;
-        // cloneBranch.path.push(cloneNext);
-        // multiverse.push(cloneBranch);
+    let possibleDirection = finder.checkPath(this.lastStep);
+    console.log(possibleDirection.length);
+    // console.log(finder);
+    if (possibleDirection.length === 0) {
+      this.deadEnd = true;
+    } else {
+      for (let i = 0; i < possibleDirection.length; i++) {
+        if (i === possibleDirection.length - 1) {
+          let next = possibleDirection[i];
+          this.lastStep = finder;
+          this.path.push(next);
+          console;
+          console.log("original", this);
+        } else {
+          let clone = this.clone();
+          let next = possibleDirection[i];
+          clone.lastStep = clone.path[clone.path.length - 1];
+          clone.path.push(next);
+          console.log("clone", clone);
+        }
       }
     }
   }

@@ -21,7 +21,7 @@ function move(e) {
   let row = current.rowNum;
   let col = current.colNum;
   if (radius > 10) {
-    //radius -= 10;
+    radius -= 10;
   } else {
     gameOver();
   }
@@ -115,4 +115,4 @@ function gameOver() {
 }
 
 generateMaze();
-newMaze.solver();
+//newMaze.solver();
