@@ -136,7 +136,7 @@ class Maze {
       for (let branch of multiverse) {
         branch.step();
         branch.isArrived();
-        if (branch.arrived || counter === 10) {
+        if (branch.arrived || counter === 100) {
           console.log("end");
           goalReached = true;
           this.solution = branch;
@@ -371,6 +371,12 @@ class Branch {
     }
   }
 
+  clone() {
+    let clone = new Branch(this.path, this.grid);
+    clone.lastStep = this.lastStep;
+    return clone;
+  }
+
   step() {
     const LAST_CELL_VISITED = this.path[this.path.length - 1];
     let finder = this.grid[LAST_CELL_VISITED.rowNum][LAST_CELL_VISITED.colNum];
@@ -385,11 +391,15 @@ class Branch {
         this.lastStep = finder;
         this.path.push(next);
       } else {
-        let cloneBranch = new Branch(this.path, this.grid);
-        let cloneNext = possibleDirection[i];
-        cloneBranch.lastStep = finder;
-        cloneBranch.path.push(cloneNext);
-        multiverse.push(cloneBranch);
+        let clone = this.clone();
+        let next = possibleDirection[i];
+        clone.lastStep = finder;
+        clone.path.push(next);
+        // let cloneBranch = new Branch(this.path, this.grid);
+        // let cloneNext = possibleDirection[i];
+        // cloneBranch.lastStep = finder;
+        // cloneBranch.path.push(cloneNext);
+        // multiverse.push(cloneBranch);
       }
     }
   }
