@@ -3,14 +3,16 @@ const TIME_DISPLAY = document.querySelector("#display-time");
 let mazeSize = localStorage.getItem("mazeSize");
 let number = localStorage.getItem("number");
 
+let timeInterval;
 let newMaze;
 
 document.addEventListener("keydown", move);
 
-function generateMaze() {
+async function generateMaze() {
   newMaze = new Maze(mazeSize, number, number);
   newMaze.setup();
-  newMaze.draw();
+  await newMaze.draw();
+  timeInterval = setInterval(displayTime, 10);
 }
 
 function move(e) {
@@ -23,6 +25,10 @@ function move(e) {
   } else {
     gameOver();
   }
+  if (game.score > 0) {
+    game.score -= 10;
+  }
+  SCORE_DISPLAY.innerText = game.score;
   if (!game.over) {
     switch (key) {
       case "ArrowUp":
@@ -72,11 +78,20 @@ function move(e) {
   }
 }
 
+function displayTime() {
+  let chrono = Date.now() - game.time.start;
+  let ms = chrono % 1000 > 9 ? chrono % 1000 : `0${chrono % 1000}`;
+  chrono = (chrono - ms) / 1000;
+  let secs = chrono % 60 > 9 ? chrono % 60 : `0${chrono % 60}`;
+  chrono = (chrono - secs) / 60;
+  let mins = chrono % 60 > 9 ? chrono % 60 : `0${chrono % 60}`;
+  TIME_DISPLAY.innerText = `${mins}:${secs}:${Math.floor(ms / 10)}`;
+}
+
 function gameOver() {
+  clearInterval(timeInterval);
   game.time.end = new Date().getTime();
-  console.log(game.time.start, game.time.end);
   game.over = true;
-  //game.time.end = new Date.getTime();
 
   ctxFog.globalCompositeOperation = "source-over";
   ctxFog.clearRect(0, 0, FOG.width, FOG.height);
@@ -92,7 +107,7 @@ function gameOver() {
   ctxFog.fillText("GAME OVER", FOG.width / 2, FOG.height / 2);
   ctxFog.font = "18px monospace";
   ctxFog.fillText(
-    `Time : ${game.getTime()}`,
+    `Time : ${TIME_DISPLAY.innerText}`,
     FOG.width / 2,
     FOG.height / 2 + 80
   );
@@ -100,5 +115,4 @@ function gameOver() {
 }
 
 generateMaze();
-if (generationComplete) {
-}
+newMaze.solver();

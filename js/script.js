@@ -8,27 +8,17 @@ let generationComplete = false;
 
 // Fog of Ward radius
 let radius = localStorage.getItem("mazeSize") * 0.75;
-
+let cellNum = localStorage.getItem("number");
 let current;
 let goal;
+let multiverse = [];
 
 let game = {
   over: false,
   victory: false,
-  score: 0,
+  score: 1000,
   time: {
     start: null,
-    end: 0,
-  },
-  getTime() {
-    let delta = this.time.end - this.time.start;
-    let ms = delta % 1000;
-    delta = (delta - ms) / 1000;
-    let secs = delta % 60;
-    delta = (delta - secs) / 60;
-    let mins = delta % 60;
-
-    return `${mins}:${secs}:${ms}`;
   },
 };
 
@@ -39,6 +29,7 @@ class Maze {
     this.columns = columns;
     this.grid = [];
     this.stack = [];
+    this.solution;
   }
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
@@ -99,12 +90,17 @@ class Maze {
         game.time.start = new Date().getTime();
       }
       this.drawFoW(radius);
+
       return;
     }
     // Recursively call the draw function. This will be called up until the stack is empty
-    window.requestAnimationFrame(() => {
+    // window.requestAnimationFrame(() => {
+    //   this.draw();
+    // });
+
+    if (!generationComplete) {
       this.draw();
-    });
+    }
   }
 
   drawFoW(rad) {
@@ -128,6 +124,27 @@ class Maze {
     ctxFog.fillStyle = "black";
     ctxFog.fillRect(0, 0, FOG.width, FOG.height);
   }
+
+  solver() {
+    let explorer = this.grid[0][0];
+    let goalReached = false;
+    let tmp_branch = new Branch([explorer], this.grid);
+    let counter = 0;
+    multiverse.push(tmp_branch);
+    while (!goalReached) {
+      counter++;
+      for (let branch of multiverse) {
+        branch.step();
+        branch.isArrived();
+        if (branch.arrived || counter === 10) {
+          console.log("end");
+          goalReached = true;
+          this.solution = branch;
+          break;
+        }
+      }
+    }
+  }
 }
 
 class Cell {
@@ -147,6 +164,7 @@ class Cell {
       leftWall: true,
     };
     this.goal = false;
+    this.torch = false;
   }
 
   checkNeighbours() {
@@ -278,31 +296,103 @@ class Cell {
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
     }
   }
+
+  checkPath(comingFrom) {
+    let grid = this.parentGrid;
+    let row = this.rowNum;
+    let col = this.colNum;
+    let walls = {
+      topWall: this.walls.topWall,
+      rightWall: this.walls.rightWall,
+      bottomWall: this.walls.bottomWall,
+      leftWall: this.walls.leftWall,
+    };
+    let possibileWay = [];
+
+    // The following lines push all available neighbours to the neighbours array
+    // undefined is returned where the index is out of bounds (edge cases)
+    let top =
+      !walls.topWall && comingFrom !== grid[row - 1][col]
+        ? grid[row - 1][col]
+        : undefined;
+    let right =
+      !walls.rightWall && comingFrom !== grid[row][col + 1]
+        ? grid[row][col + 1]
+        : undefined;
+    let bottom =
+      !walls.bottomWall && comingFrom !== grid[row + 1][col]
+        ? grid[row + 1][col]
+        : undefined;
+    let left =
+      !walls.leftWall && comingFrom !== grid[row][col - 1]
+        ? grid[row][col - 1]
+        : undefined;
+
+    // if the following are not 'undefined' then push them to the neighbours array
+    if (top) {
+      possibileWay.push(top);
+    }
+    if (right) {
+      possibileWay.push(right);
+    }
+    if (bottom) {
+      possibileWay.push(bottom);
+    }
+    if (left) {
+      possibileWay.push(left);
+    }
+
+    return possibileWay;
+    // // Choose a random neighbour from the neighbours array
+    // if (neighbours.length !== 0) {
+    //   let random = Math.floor(Math.random() * neighbours.length);
+    //   return neighbours[random];
+    // } else {
+    //   return undefined;
+    // }
+  }
 }
 
-// class Fog {
-//   constructor(size, x, y, radius) {
-//     this.size = size;
-//     this.x = x;
-//     this.y = y;
-//     this.radius = radius;
-//   }
+class Branch {
+  constructor(path, grid) {
+    this.path = path;
+    this.grid = grid;
+    this.deadEnd = false;
+    this.arrived = false;
+    this.lastStep = null;
+  }
 
-//   draw() {
-//     FOG.height = this.size;
-//     FOG.width = this.size;
-//     ctxFog.globalCompositeOperation = "xor";
+  isArrived() {
+    for (let cell of this.path) {
+      if (cell.rowNum === cellNum - 1 && cell.colNum === cellNum - 1) {
+        this.arrived = true;
+        break;
+      }
+    }
+  }
 
-//     ctxFog.fillStyle = "black";
-//     ctxFog.fillRect(0, 0, FOG.width, FOG.height);
+  step() {
+    const LAST_CELL_VISITED = this.path[this.path.length - 1];
+    let finder = this.grid[LAST_CELL_VISITED.rowNum][LAST_CELL_VISITED.colNum];
 
-//     ctxFog.beginPath();
-//     ctxFog.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-//     ctxFog.fillStyle = "black";
-//     ctxFog.fill();
-//   }
-// }
+    let possibleDirection = finder.checkPath(this.lastStep);
+    console.log(finder);
+    console.log(possibleDirection);
 
-// let newMaze = new Maze(600, 15, 15);
-// newMaze.setup();
-// newMaze.draw();
+    for (let i = 0; i < possibleDirection.length; i++) {
+      if (i === possibleDirection.length - 1) {
+        let next = possibleDirection[i];
+        this.lastStep = finder;
+        this.path.push(next);
+      } else {
+        let cloneBranch = new Branch(this.path, this.grid);
+        let cloneNext = possibleDirection[i];
+        cloneBranch.lastStep = finder;
+        cloneBranch.path.push(cloneNext);
+        multiverse.push(cloneBranch);
+      }
+    }
+  }
+}
+
+// const clone = structuredClone(object);
