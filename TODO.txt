@@ -1,0 +1,23 @@
+Change difficulty setting to be dependable from the size of the maze (bigger size should have more torch at same difficulty then smaller maze)
+Reposition of score and time in maze screen
+Create local repository for personal scores and times
+Create ReadMe file
+Clarify that play again will give a new maze
+Change form style (change select in radio button)
+If you win, more points are given
+
+Add comand explantation
+Add count down to start
+Add WASD to controls (what about azerty?)
+Add "return to lobby"  button (and change to location.replace())
+Add sound
+
+Infinite maze creation in background (for deign)
+
+
+Must fix: FoW increase the step AFTER the torch was picked up
+Must fix: limit max light
+Must fix: losing when light is bigger (limit to be a little big bigger then the character)
+Must fix: torch size must change with maze size
+Must fix: Ligth decrese when walking to wall
+Must fix: remove rules from loading
