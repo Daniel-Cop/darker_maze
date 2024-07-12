@@ -3,6 +3,7 @@ const LOADER_TITLE = document.querySelector("#loader-title");
 const TITLE = document.querySelector(".title");
 let form = document.querySelector("#settings");
 let rowsCols = document.querySelector("#number");
+let difficulty = document.querySelector("#difficulty");
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -15,6 +16,7 @@ form.addEventListener("submit", function (e) {
     return;
   }
 
+  localStorage.setItem("difficulty", difficulty.value);
   localStorage.setItem("mazeSize", 600);
   localStorage.setItem("number", rowsCols.value);
   TITLE.style.setProperty("display", "none");

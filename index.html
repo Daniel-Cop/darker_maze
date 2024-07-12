@@ -12,26 +12,27 @@
 
 <body>
     <h1 class="title">Darker Maze</h1>
-
+    <p id="rule">rule
+    </p>
     <form id="settings" action="maze.html">
         <p>Maze Size</p>
         <select name="number" id="number">
             <option value="12">Small</option>
-            <option value="20">Medium</option>
+            <option value="20" selected>Medium</option>
             <option value="30">Big</option>
         </select>
         <p>Difficulty</p>
         <select name="difficulty" id="difficulty">
-            <option value="12">Easy</option>
-            <option value="20">Medium</option>
-            <option value="30">Hard</option>
+            <option value="30">Easy</option>
+            <option value="20" selected>Medium</option>
+            <option value="15">Hard</option>
         </select>
         <!-- 
         <input id="number" type="number" value="15" /></br> -->
         <input id="submit" type="submit" value="Play">
-
-        <h2 id="loader-title">Generating Maze...</h2>
-        <div id="loader"></div>
+    </form>
+    <h2 id="loader-title">Generating Maze...</h2>
+    <div id="loader"></div>
 </body>
 
 </html>

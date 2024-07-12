@@ -11,6 +11,16 @@ body {
     font-family: 'Press Start 2P', cursive;
 }
 
+p {
+  font-size: 18px;
+
+  font-family: monospace;
+}
+
+#rule {
+  font-size: 14px;
+}
+
 form {
   display: flex;
   flex-direction: column;

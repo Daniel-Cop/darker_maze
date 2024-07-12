@@ -1,6 +1,6 @@
 const MAZE = document.querySelector("#maze");
 const FOG = document.querySelector("#fog-of-war");
-const TORCH_NUMBER = 20;
+const TORCH_NUMBER = localStorage.getItem("difficulty");
 let mazeSize = localStorage.getItem("mazeSize");
 
 let ctx = MAZE.getContext("2d");
