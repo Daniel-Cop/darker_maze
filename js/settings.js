@@ -1,12 +1,15 @@
 const SCORE_DISPLAY = document.querySelector("#display-score");
 const TIME_DISPLAY = document.querySelector("#display-time");
-let mazeSize = localStorage.getItem("mazeSize");
+const PLAY_BUTTON = document.querySelector("#btn-play");
+const RETURN_BUTTON = document.querySelector("#btn-return");
 let number = localStorage.getItem("number");
 
 let timeInterval;
 let newMaze;
 
 document.addEventListener("keydown", move);
+PLAY_BUTTON.addEventListener("click", () => location.reload());
+RETURN_BUTTON.addEventListener("click", () => location.replace("index.html"));
 
 async function generateMaze() {
   newMaze = new Maze(mazeSize, number, number);
@@ -25,10 +28,7 @@ function move(e) {
   } else {
     gameOver();
   }
-  if (game.score > 0) {
-    game.score -= 10;
-  }
-  SCORE_DISPLAY.innerText = game.score;
+
   if (!game.over) {
     switch (key) {
       case "ArrowUp":
@@ -36,7 +36,9 @@ function move(e) {
           let next = newMaze.grid[row - 1][col];
           current = next;
           newMaze.draw();
-
+          if (game.score > 0) {
+            game.score -= 10;
+          }
           current.highlight(newMaze.columns);
           // if (current.goal);
         }
@@ -47,7 +49,9 @@ function move(e) {
           let next = newMaze.grid[row][col + 1];
           current = next;
           newMaze.draw();
-
+          if (game.score > 0) {
+            game.score -= 10;
+          }
           current.highlight(newMaze.columns);
         }
         break;
@@ -57,7 +61,9 @@ function move(e) {
           let next = newMaze.grid[row + 1][col];
           current = next;
           newMaze.draw();
-
+          if (game.score > 0) {
+            game.score -= 10;
+          }
           current.highlight(newMaze.columns);
         }
         break;
@@ -67,11 +73,22 @@ function move(e) {
           let next = newMaze.grid[row][col - 1];
           current = next;
           newMaze.draw(radius);
+          if (game.score > 0) {
+            game.score -= 10;
+          }
           current.highlight(newMaze.columns);
         }
         break;
     }
   }
+  if (current.torch) {
+    console.log(radius);
+    radius += 85;
+    game.score += 100;
+    current.torch = false;
+    console.log(radius);
+  }
+  SCORE_DISPLAY.innerText = game.score;
   if (current.goal) {
     game.victory = true;
     gameOver();
@@ -104,7 +121,11 @@ function gameOver() {
   ctxFog.font = "36px monospace";
   ctxFog.textAlign = "center";
   ctxFog.textBaseline = "middle";
-  ctxFog.fillText("GAME OVER", FOG.width / 2, FOG.height / 2);
+  if (game.victory) {
+    ctxFog.fillText("YOU WON!", FOG.width / 2, FOG.height / 2);
+  } else {
+    ctxFog.fillText("GAME OVER", FOG.width / 2, FOG.height / 2);
+  }
   ctxFog.font = "18px monospace";
   ctxFog.fillText(
     `Time : ${TIME_DISPLAY.innerText}`,
@@ -112,7 +133,8 @@ function gameOver() {
     FOG.height / 2 + 80
   );
   ctxFog.fillText(`Score : ${game.score}`, FOG.width / 2, FOG.height / 2 + 40);
+  PLAY_BUTTON.style.setProperty("display", "block");
+  RETURN_BUTTON.style.setProperty("display", "block");
 }
 
 generateMaze();
-//newMaze.solver();

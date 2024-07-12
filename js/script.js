@@ -1,13 +1,16 @@
 const MAZE = document.querySelector("#maze");
 const FOG = document.querySelector("#fog-of-war");
+const TORCH_NUMBER = 20;
+let mazeSize = localStorage.getItem("mazeSize");
 
 let ctx = MAZE.getContext("2d");
 let ctxFog = FOG.getContext("2d");
 
 let generationComplete = false;
+let torchPlaced = false;
 
 // Fog of Ward radius
-let radius = localStorage.getItem("mazeSize") * 0.75;
+let radius = mazeSize * 0.75;
 let cellNum = localStorage.getItem("number");
 let current;
 let goal;
@@ -85,13 +88,14 @@ class Maze {
     // If no more items in the stack then all cells have been visted and the function can be exited
     if (this.stack.length === 0) {
       generationComplete = true;
-      current.highlight(this.columns);
       if (game.time.start === null) {
         game.time.start = new Date().getTime();
       }
       this.drawFoW(radius);
-
-      return;
+      if (!torchPlaced) {
+        this.placeTorch();
+      }
+      current.highlight(this.columns);
     }
     // Recursively call the draw function. This will be called up until the stack is empty
     // window.requestAnimationFrame(() => {
@@ -123,6 +127,26 @@ class Maze {
 
     ctxFog.fillStyle = "black";
     ctxFog.fillRect(0, 0, FOG.width, FOG.height);
+  }
+
+  placeTorch() {
+    for (let i = 0; i < TORCH_NUMBER; i++) {
+      let randomY = Math.floor(Math.random() * (cellNum - 1));
+      let randomX = Math.floor(Math.random() * (cellNum - 1));
+      let targetCell = this.grid[randomY][randomX];
+      if (randomY !== 0 && randomX !== 0 && !targetCell.torch) {
+        this.grid[randomY][randomX].torch = true;
+      } else {
+        i--;
+      }
+    }
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.columns; c++) {
+        let grid = this.grid;
+        grid[r][c].show(this.size, this.rows, this.columns);
+      }
+    }
+    torchPlaced = true;
   }
 
   solver() {
@@ -297,6 +321,12 @@ class Cell {
     if (this.goal) {
       ctx.fillStyle = "rgb(83,247,43)";
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
+    }
+    if (this.torch) {
+      ctx.fillStyle = "red";
+      ctx.beginPath();
+      ctx.arc(x + size / columns / 2, y + size / rows / 2, 10, 0, 2 * Math.PI);
+      ctx.fill();
     }
   }
 

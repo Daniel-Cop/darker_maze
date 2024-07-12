@@ -7,17 +7,31 @@
     <title>Darker Maze</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="js/menu.js" defer></script>
+    <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
     <h1 class="title">Darker Maze</h1>
 
     <form id="settings" action="maze.html">
-        <p>Rows/Columns</p>
-        <input id="number" type="number" value="15" /></br>
+        <p>Maze Size</p>
+        <select name="number" id="number">
+            <option value="12">Small</option>
+            <option value="20">Medium</option>
+            <option value="30">Big</option>
+        </select>
+        <p>Difficulty</p>
+        <select name="difficulty" id="difficulty">
+            <option value="12">Easy</option>
+            <option value="20">Medium</option>
+            <option value="30">Hard</option>
+        </select>
+        <!-- 
+        <input id="number" type="number" value="15" /></br> -->
         <input id="submit" type="submit" value="Play">
-    </form>
-    <div id="loader"></div>
+
+        <h2 id="loader-title">Generating Maze...</h2>
+        <div id="loader"></div>
 </body>
 
 </html>
