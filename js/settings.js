@@ -4,6 +4,10 @@ const PLAY_BUTTON = document.querySelector("#btn-play");
 const RETURN_BUTTON = document.querySelector("#btn-return");
 let number = localStorage.getItem("number");
 
+const MUSIC = new Audio("./asset/wham-last-christmas.mp3");
+
+let isMusicPlayng = false;
+
 let timeInterval;
 let newMaze;
 
@@ -27,6 +31,12 @@ function move(e) {
     radius -= 10;
   } else {
     gameOver();
+  }
+
+  if (!isMusicPlayng) {
+    MUSIC.play();
+    isMusicPlayng = true;
+    console.log("Start music");
   }
 
   if (!game.over) {

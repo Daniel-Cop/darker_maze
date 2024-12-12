@@ -4,6 +4,9 @@ const TITLE = document.querySelector(".title");
 let form = document.querySelector("#settings");
 let rowsCols = document.querySelector("#number");
 let difficulty = document.querySelector("#difficulty");
+const MUSIC = new Audio(
+  "https://www.myinstants.com/en/instant/wham-last-christmas-13880/?utm_source=copy&utm_medium=share"
+);
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
